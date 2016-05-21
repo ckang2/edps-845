@@ -1,0 +1,652 @@
+---
+title: "EDPS 845 Assignment 2"
+author: Chansuk Kang
+Webaddress: Advanced R (http://adv-r.had.co.nz/) 
+---
+## Exercises
+
+### Chapter 2. Data structures
+
+## Vectors
+
+1.What are the six types of atomic vector? How does a list differ from an atomic vector?
+```{r, eval=FALSE}
+There are 6 typrs of atomic vector, such as logical, integer, double (often called numeric), character, complex, and raw.Lists are different from atomic vectors because their elements can be of any type, including lists.
+```
+
+2.What makes is.vector() and is.numeric() fundamentally different to is.list() and is.character()?
+```{r, eval=FALSE}
+ is.vector()  and  is.numeric() are for any types. On the other hand,is.list()  and  is.character() are for specific types. 
+```
+
+3.Test your knowledge of vector coercion rules by predicting the output of the following uses of c():
+c(1, FALSE)
+c("a", 1)
+c(list(1), "a")
+c(TRUE, 1L)
+```{r, eval=FALSE}
+ c(1, FALSE)  
+# [1] 1 0 
+# -> numeric
+
+ c("a", 1)  
+# [1] "a" "1" 
+# -> character
+
+ c(list(1), "a")  
+# [[1]]
+# [1] 1
+
+# [[2]]
+# [1] "a"
+# -> list
+
+ c(TRUE, 1L)  
+# [1] 1 1 
+# -> numeric
+```
+
+4.Why do you need to use unlist() to convert a list to an atomic vector? Why doesn't as.vector() work?
+```{r, eval=FALSE}
+"as.vector()" cannot handle recursion within lists.  Only "unlist()" can do that.Or since "list" is also vector, "as.vector()" do not coerce to an atomic vector, just leave as a list.
+```
+
+5.Why is 1 == "1" true? Why is -1 < FALSE true? Why is "one" < 2 false?
+```{r, eval=FALSE}
+When we attempt to combine different types of automic vectors, they will be coerced to the most flexible type. Types from least to most flexible are: logical, integer, double, and character.Since character("one") is more felxibile than numeric (2), it should yield character, not numeric. So it is false.
+```
+
+6.Why is the default missing value, NA, a logical vector? What's special about logical vectors? (Hint: think about c(FALSE, NA_character_).)
+```{r, eval=FALSE}
+In r, missing values are specified with NA, which is a logical vector of length 1. NA will always be coerced to the correct type if used inside c(), or you can create NAs of a specific type with NA_real_ (a double vector), NA_integer_ and NA_character_. 
+```
+
+## Attributes
+
+1.An early draft used this code to illustrate structure():
+structure(1:5, comment = "my attribute")
+#> [1] 1 2 3 4 5
+
+But when you print that object you don't see the comment attribute. Why? Is the attribute missing, or is there something else special about it? (Hint: try using help.) 
+```{r, eval=FALSE}
+# from "?comment"
+Contrary to other attributes, the comment is not printed (by print or print.default).
+```
+
+2.What happens to a factor when you modify its levels?
+f1 <- factor(letters)
+levels(f1) <- rev(levels(f1))
+```{r, eval=FALSE}
+# r output
+> f1 <- factor(letters)
+> levels(f1)
+ [1] "a" "b" "c" "d" "e" "f" "g" "h" "i" "j" "k"
+[12] "l" "m" "n" "o" "p" "q" "r" "s" "t" "u" "v"
+[23] "w" "x" "y" "z"
+> rev(levels(f1))
+ [1] "z" "y" "x" "w" "v" "u" "t" "s" "r" "q" "p"
+[12] "o" "n" "m" "l" "k" "j" "i" "h" "g" "f" "e"
+[23] "d" "c" "b" "a"
+
+rev provides a reversed version of its argument.So it reversed both the vector and the levels.
+```
+
+3.What does this code do? How do f2 and f3 differ from f1?
+f2 <- rev(factor(letters))
+
+f3 <- factor(letters, levels = rev(letters))
+```{r}
+# f1 <- factor(letters)
+# f1
+# [1] a b c d e f g h i j k l m n o p q r s t u v
+# [23] w x y z
+# 26 Levels: a b c d e f g h i j k l m n o p ... z
+
+# f2 <- rev(factor(letters))
+# f2
+# [1] z y x w v u t s r q p o n m l k j i h g f e
+# [23] d c b a
+# 6 Levels: a b c d e f g h i j k l m n o p ... z
+
+# ->Compared to f1, it reversed the factor reversed the vector, but left the levels intact.
+
+# f3 <- factor(letters, levels = rev(letters))
+# f3
+# [1] a b c d e f g h i j k l m n o p q r s t u v
+# [23] w x y z
+# 26 Levels: z y x w v u t s r q p o n m l k ... a
+
+# -> Compared to fa, it reversed the levels, but not the vector.
+```
+
+## Matrices and arrays
+
+1.What does dim() return when applied to a vector?
+```{r, eval=FALSE}
+Adding a dim() attribute to an atomic vector allows it to behave like a multi-dimensional array. A special case of the array is the matrix, which has two dimensions
+```
+
+2.If is.matrix(x) is TRUE, what will is.array(x) return?
+```{r, eval=FALSE}
+Matrix ia a special case of the array. So if "is.matrix(x)" is TRUE, "is.array(x)" also should be TRUE. 
+```
+
+3.How would you describe the following three objects? What makes them different to 1:5?
+x1 <- array(1:5, c(1, 1, 5))
+x2 <- array(1:5, c(1, 5, 1))
+x3 <- array(1:5, c(5, 1, 1))
+```{r, eval=FALSE}
+x1 and x2, and x3 are 3 dimensional array whereas  1:5 is an atomic vector. x1 has 1 row 1 column and 5 slices. X2 has 1 row 5 columns, and 1 slice. X3 has 5 rows 1 column, and 1 slice. 
+> x1
+, , 1
+
+     [,1]
+[1,]    1
+
+, , 2
+
+     [,1]
+[1,]    2
+
+, , 3
+
+     [,1]
+[1,]    3
+
+, , 4
+
+     [,1]
+[1,]    4
+
+, , 5
+
+     [,1]
+[1,]    5
+
+> x2
+, , 1
+
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    2    3    4    5
+
+> x3
+, , 1
+
+     [,1]
+[1,]    1
+[2,]    2
+[3,]    3
+[4,]    4
+[5,]    5
+```
+
+## Data frames
+
+1.What attributes does a data frame possess?
+```{r, eval=FALSE}
+names(), colnames(), rownames(), length(), ncol(), nrow(), and class(). 
+```
+
+2.What does as.matrix() do when applied to a data frame with columns of different types?
+```{r, eval=FALSE}
+bad <- data.frame(cbind(a = 1:2, b = c("a", "b")))
+bad
+as.matrix(bad)
+> bad
+  a b
+1 1 a
+2 2 b
+> as.matrix(bad)
+     a   b  
+[1,] "1" "a"
+[2,] "2" "b"
+
+# -> It made "coercion" into the same type (into character).
+
+```
+
+3.Can you have a data frame with 0 rows? What about 0 columns?
+```{r, eval=FALSE}
+Since completely empty data frame is possible, I can have a data frame with 0 rows and data frame with 0 columns.
+```
+
+### Ch3. Subsetting
+
+## Data types
+
+1.Fix each of the following common data frame subsetting errors:
+mtcars[mtcars$cyl = 4, ]
+mtcars[-1:4, ]
+mtcars[mtcars$cyl <= 5]
+mtcars[mtcars$cyl == 4 | 6, ]
+```{r, eval=FALSE}
+# mtcars[mtcars$cyl = 4, ]
+# -> mtcars[mtcars$cyl == 4, ]
+
+# mtcars[-1:4, ]
+# -> mtcars[-(1:4), ]
+
+# mtcars[mtcars$cyl <= 5]
+# -> mtcars[mtcars$cyl <= 5, ]
+
+# mtcars[mtcars$cyl == 4 | 6, ]
+# -> mtcars[mtcars$cyl == 4 |mtcars$cyl == 6, ]
+```
+
+2.Why does x <- 1:5; x[NA] yield five missing values? (Hint: why is it different from x[NA_real_]?)
+```{r, eval=FALSE}
+> x <- 1:5; x[NA]
+[1] NA NA NA NA NA
+> x[NA_real_]
+[1] NA
+
+NA is a logical constant of length 1 which contains a missing value indicator.It can be used as index.  Indexing by  NA  always gives back an  NA (recycling). That's why we've got 5 NAs. 
+```
+
+3.What does upper.tri() return? How does subsetting a matrix with it work? Do we need any additional subsetting rules to describe its behaviour?
+x <- outer(1:5, 1:5, FUN = "*")
+x[upper.tri(x)]
+```{r, eval=FALSE}
+> x <- outer(1:5, 1:5, FUN = "*")
+> x
+     [,1] [,2] [,3] [,4] [,5]
+[1,]    1    2    3    4    5
+[2,]    2    4    6    8   10
+[3,]    3    6    9   12   15
+[4,]    4    8   12   16   20
+[5,]    5   10   15   20   25
+> x[upper.tri(x)]
+ [1]  2  3  6  4  8 12  5 10 15 20
+
+# -> "upper.tri()" returns a matrix of logicals the same size of a given matrix with entries TRUE in the upper triangle of the matrix. Thus, subsetting with it returns the values in the upper triangle, column by column ( 2 / 3, 6 / 4, 8, 12 / 5, 10, 15, 20 )
+```
+
+4.Why does mtcars[1:20] return an error? How does it differ from the similar mtcars[1:20, ]?
+```{r, eval=FALSE}
+> ncol(mtcars)
+[1] 11
+> nrow(mtcars)
+[1] 32
+
+mtcars has 11 columns and 32 rows. However, "mtcars[1:20]" is asking 20 colums to make that is not possible. Thus, it returned error. Instead, "mtcars[1:20, ]" is asking 20 rows, which is fine.
+```
+
+5.Implement your own function that extracts the diagonal entries from a matrix (it should behave like diag(x) where x is a matrix).
+```{r, eval=FALSE}
+x <- matrix(rnorm(16), 4, 4)
+x
+diag(x)
+
+> x <- matrix(rnorm(16), 4, 4)
+> x
+           [,1]        [,2]       [,3]      [,4]
+[1,] -0.5239763  1.07936039  0.1244092 -1.446530
+[2,] -1.2555270  0.05624346  1.7594806 -1.305047
+[3,]  0.1591376 -0.86201456  0.8810237 -1.380819
+[4,] -1.0422215  0.42482431 -2.3200597  1.150120
+> diag(x)
+[1] -0.52397632  0.05624346  0.88102370
+[4]  1.15011998
+```
+
+6.What does df[is.na(df)] <- 0 do? How does it work?
+```{r, eval=FALSE}
+The generic function is.na indicates which elements are missing. Therefore, "df[is.na(df)] <- 0" replaces all  NA  values in df with  0.
+```
+
+## Subsetting operators
+
+1.Given a linear model, e.g., mod <- lm(mpg ~ wt, data = mtcars), extract the residual degrees of freedom. Extract the R squared from the model summary (summary(mod))
+```{r, eval=FALSE}
+# extract the residual degrees of freedom
+> mod <- lm(mpg ~ wt, data = mtcars)
+> names(mod)
+ [1] "coefficients"  "residuals"    
+ [3] "effects"       "rank"         
+ [5] "fitted.values" "assign"       
+ [7] "qr"            "df.residual"  
+ [9] "xlevels"       "call"         
+[11] "terms"         "model"        
+> mod$df.residual
+[1] 30
+
+# Extract the R squared from the model summary
+> s <- summary(mod)
+> names(s)
+ [1] "call"          "terms"        
+ [3] "residuals"     "coefficients" 
+ [5] "aliased"       "sigma"        
+ [7] "df"            "r.squared"    
+ [9] "adj.r.squared" "fstatistic"   
+[11] "cov.unscaled" 
+> s$r.squared
+[1] 0.7528328
+```
+
+## Applications
+
+1.How would you randomly permute the columns of a data frame? (This is an important technique in random forests.) Can you simultaneously permute the rows and columns in one step?
+```{r, eval=FALSE}
+# a data frame
+df <- data.frame(x = rep(1:3, each = 2), y = 6:1, z = letters[1:6])
+> df
+  x y z
+1 1 6 a
+2 1 5 b
+3 2 4 c
+4 2 3 d
+5 3 2 e
+6 3 1 f
+
+# randomly permute the columns
+> df[sample(ncol(df))]
+  z y x
+1 a 6 1
+2 b 5 1
+3 c 4 2
+4 d 3 2
+5 e 2 3
+6 f 1 3
+
+# simultaneously permute the rows and columns in one step
+> df[sample(nrow(df)),sample(ncol(df))]
+  y z x
+5 2 e 3
+4 3 d 2
+1 6 a 1
+2 5 b 1
+6 1 f 3
+3 4 c 2
+```
+
+2.How would you select a random sample of m rows from a data frame? What if the sample had to be contiguous (i.e., with an initial row, a final row, and every row in between)?
+```{r, eval=FALSE}
+# a data frame
+df 
+
+  x y z
+1 1 6 a
+2 1 5 b
+3 2 4 c
+4 2 3 d
+5 3 2 e
+6 3 1 f
+
+# Select 3 random rows
+df[sample(nrow(df), 3), ]
+
+  x y z
+5 3 2 e
+2 1 5 b
+3 2 4 c
+
+# Select 3 contiguous rows
+m <- 3
+df[sample(nrow(df) - m + 1, size = 1) + (0:(m - 1)), ]
+
+  x y z
+2 1 5 b
+3 2 4 c
+4 2 3 d
+```
+
+3.How could you put the columns in a data frame in alphabetical order?
+```{r, eval=FALSE}
+mtcars # a data frame
+colnames(mtcars)
+#  [1] "mpg"  "cyl"  "disp" "hp"   "drat" "wt"  
+#  [7] "qsec" "vs"   "am"   "gear" "carb"
+ao_mtcars <- mtcars[order(names(mtcars))]
+colnames(ao_mtcars)
+#  [1] "am"   "carb" "cyl"  "disp" "drat" "gear"
+#  [7] "hp"   "mpg"  "qsec" "vs"   "wt" 
+```
+
+### Ch 6. Functions
+```{r, eval=FALSE}
+install.packages("pryr")
+library("pryr")
+```
+
+## Function components
+
+1.What function allows you to tell if an object is a function? What function allows you to tell if a function is a primitive function?
+```{r, eval=FALSE}
+ is.function()
+ is.primitive()
+```
+
+2.This code makes a list of all functions in the base package.
+objs <- mget(ls("package:base"), inherits = TRUE)
+funs <- Filter(is.function, objs)
+
+Use it to answer the following questions:
+
+a.Which base function has the most arguments?
+```{r, eval=FALSE}
+install.packages("plyr")
+library("plyr")
+
+arlength <- laply(funs, function(x)(length(formals(x))))
+
+maxlength <- which(arlength == max(arlength))
+
+names(funs[maxlength])
+
+# [1] "scan"
+```
+
+b.How many base functions have no arguments? What's special about those functions?
+```{r, eval=FALSE}
+length(which(arlength == 0))
+
+# [1] 225
+```
+
+c.How could you adapt the code to find all primitive functions?
+```{r, eval=FALSE}
+pf <- Filter(is.primitive, objs)
+names(pf)
+```
+
+3.What are the three important components of a function?
+```{r, eval=FALSE}
+
+."body()":  the code inside the function.
+
+."formals()": the list of arguments which controls how you can call the function.
+
+."environment()": the "map" of the location of the function's variables.
+```
+
+4.When does printing a function not show what environment it was created in?
+```{r, eval=FALSE}
+If it is a primitive function, such as sum(), its formals(), body(), and environment() are all NULL. So, its environment is not show up (printed).
+```
+
+## Lexical scoping
+
+1.What does the following code return? Why? What does each of the three c's mean?
+c <- 10
+c(c = c)
+```{r, eval=FALSE}
+> c <- 10
+> c(c = c)
+# c 
+# 10 
+
+# 1st c is for creating vector
+# 2nd c is a variable name
+# 3rd c is value (=10) of the variable name c
+Scoping is the set of rules that govern how R looks up the value of a symbol. 
+```
+
+2.What are the four principles that govern how R looks for values?
+```{r, eval=FALSE}
+There are four basic principles behind R's implementation of lexical scoping:
+.name masking
+.functions vs. variables
+.a fresh start
+.dynamic lookup
+```
+
+3.What does the following function return? Make a prediction before running the code yourself.
+f <- function(x) {
+  f <- function(x) {
+    f <- function(x) {
+      x ^ 2
+    }
+    f(x) + 1
+  }
+  f(x) * 2
+}
+f(10)
+```{r, eval=FALSE}
+# [1] 202
+
+# -> 10^2 = 100
+# -> 100 + 1 = 101
+# -> 101 * 2 = 202
+```
+
+## Function arguments
+
+1.Clarify the following list of odd function calls:
+x <- sample(replace = TRUE, 20, x = c(1:10, NA))
+y <- runif(min = 0, max = 1, 20)
+cor(m = "k", y = y, u = "p", x = x)
+```{r, eval=FALSE}
+x <- sample(replace = TRUE, 20, x = c(1:10, NA))
+x <- sample(c(1:10, NA), 20, replace = TRUE)
+
+y <- runif(min = 0, max = 1, 20)
+y <- runif(20, min = 0, max = 1)
+
+cor(m = "k", y = y, u = "p", x = x)
+cor(x, y, use = "pairwise", method = "kendall" )
+```
+
+2.What does this function return? Why? Which principle does it illustrate?
+f1 <- function(x = {y <- 1; 2}, y = 0) {
+  x + y
+}
+f1()
+```{r, eval=FALSE}
+# [1] 3
+
+y = 1
+(x = {1; 2}, y = 0)
+(x, y) = (1,0), (2,0)
+{x + y} = (1+0) + (2+0) = 3 
+Thus, f1() = 3
+```
+
+3.What does this function return? Why? Which principle does it illustrate?
+f2 <- function(x = z) {
+  z <- 100
+  x
+}
+f2()
+```{r, eval=FALSE}
+# [1] 100
+
+since z = 100, x = 100 (cuz x = z)
+Thus, f2() = 100
+```
+
+## Special calls
+
+1.Create a list of all the replacement functions found in the base package. Which ones are primitive functions?
+```{r, eval=FALSE}
+objs <- mget(ls("package:base"), inherits = TRUE)
+pf2 <- Filter(is.primitive, objs)
+```
+
+2.What are valid names for user-created infix functions?
+```{r, eval=FALSE}
+All user-created infix functions must start and end with % , such as %myfunction%.
+```
+
+3.Create an infix xor() operator.
+```{r, eval=FALSE}
+ `%xor%`  <- function(x, y) { 
+   xor(x, y) 
+}
+```
+
+4.Create infix versions of the set functions intersect(), union(), and setdiff().
+```{r, eval=FALSE}
+# intersect()
+`%=%` <- function(x, y) {
+  intersect(x, y)
+}
+
+# union()
+`%+%` <- function(x, y) {
+  union(x, y)
+}
+
+# setdiff()
+`%-%` <- function(x, y) {
+  setdiff(x, y)
+}
+```
+
+5.Create a replacement function that modifies a random location in a vector.
+```{r, eval=FALSE}
+"r_location<-" <- function(x, position, value) { 
+   x[sample(seq_along(x), 1)] <- value 
+   x 
+} 
+```
+
+## Return values
+
+1.How does the chdir parameter of source() compare to in_dir()? Why might you prefer one approach to the other?
+```{r, eval=FALSE}
+"chdir" is a parameter of source() and it temporarily change the R working directory to the directory containing file for evaluating. On the other hand, "in_dir()" means working directory. 
+```
+
+2.What function undoes the action of library()? How do you save and restore the values of options() and par()?
+```{r, eval=FALSE}
+"detach()" can undo the action of "library()". "options()" allow the user to set and examine a variety of global options which affect the way in which R computes and displays its results. "par()" can be used to set or query graphical parameters.
+```
+
+3.Write a function that opens a graphics device, runs the supplied code, and closes the graphics device (always, regardless of whether or not the plotting code worked).
+```{r, eval=FALSE}
+plot_function <- function() {
+  x <- c(1:100)
+  y <- rnorm(100)
+  plot(x, y, type = "h", col = "orange", lwd = 10, 
+       main = "A plot for fun")
+  points(x, y, cex = .5, col = "black")
+  on.exit(dev.off())
+}
+
+plot_function()
+```
+
+4.We can use on.exit() to implement a simple version of capture.output().
+
+capture.output2 <- function(code) {
+  temp <- tempfile()
+  on.exit(file.remove(temp), add = TRUE)
+
+  sink(temp)
+  on.exit(sink(), add = TRUE)
+
+  force(code)
+  readLines(temp)
+}
+
+capture.output2(cat("a", "b", "c", sep = "\n"))
+#> [1] "a" "b" "c"
+
+Compare capture.output() to capture.output2(). How do the functions differ? What features have I removed to make the key ideas easier to see? How have I rewritten the key ideas to be easier to understand?
+```{r, eval=FALSE}
+"capture.output()" is used to evaluate its arguments with the output being returned as a character string or sent to a file. It is related to "sink()" in the same way that "with()" is related to "attach()". 
+```
+
+
+
+
