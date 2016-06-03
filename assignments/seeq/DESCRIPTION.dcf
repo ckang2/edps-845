@@ -1,0 +1,16 @@
+Package: seeq
+Type: Package
+Title: Linear Equating Analytic Standard Error
+Version: 0.1.0
+Authors@R: person("Chansuk", "Kang", email = "coldstone78@gmail.com",
+                  role = c("aut", "cre"))
+Description: This package is used to calcuate the analytic standard error of
+             linear equating (the delta method) under random groups design.
+Date: 2016-06-02
+Imports:
+    equate,
+    devtools
+Depends: R (>= 3.2.5)
+License: GPL-3
+LazyData: TRUE
+RoxygenNote: 5.0.1
